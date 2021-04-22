@@ -1,29 +1,26 @@
 package model;
 
-import model.email.Email;
-import model.email.SmtpException;
+
+import model.interfaces.EmailService;
+import model.interfaces.EmployeeRepository;
 
 public class EmployeeBirthday {
 
     private final EmployeeRepository repository;
+    private final EmailService email;
 
-    public EmployeeBirthday(EmployeeRepository repository) {
+    public EmployeeBirthday(EmployeeRepository repository, EmailService email) {
         this.repository = repository;
+        this.email = email;
     }
 
     public void sendEmails() {
         repository.load().stream().filter(Employee::birthday).forEach(
-                employee -> {
-                    try {
-                        new Email(
-                                employee.getEmail(),
-                                "Saludo de cumpleaños",
-                                "¡Feliz cumpleaños " + employee.getName() + "!"
-                        ).enviar();
-                    } catch (SmtpException e) {
-                        throw new RuntimeException("No se pudo enviar el email de cumpleaños.", e);
-                    }
-                }
+                employee -> email.send(
+                        employee.getEmail(),
+                        "Saludo de cumpleaños",
+                        "¡Feliz cumpleaños " + employee.getName() + "!"
+                )
         );
     }
 

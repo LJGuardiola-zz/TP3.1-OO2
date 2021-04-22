@@ -1,7 +1,7 @@
 package db;
 
 import model.Employee;
-import model.EmployeeRepository;
+import model.interfaces.EmployeeRepository;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -12,11 +12,15 @@ import java.util.stream.Collectors;
 
 public class EmployeeRepositoryFile implements EmployeeRepository {
 
-    private static final File FILE = new File("employees.txt");
+    private final File file;
+
+    public EmployeeRepositoryFile(String file) {
+        this.file = new File(file);
+    }
 
     @Override
     public List<Employee> load() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             return reader.lines()
                     .map(line -> line.split(", "))
                     .map(str -> new Employee(str[0], str[1], str[2], str[3]))
